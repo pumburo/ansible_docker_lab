@@ -27,7 +27,7 @@ case $1 in
 			rm -rf /tmp/hostsFileForAnsible
 		fi
 
-		for cont in $(docker ps -a | grep ansible_test_host | awk '{print $1}'); do
+		for cont in $(docker ps -a | grep ansible_test_host | awk '{print $1}' | tac); do
 			docker start ${cont}
 			hostIp=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${cont})
 			contName=$(docker inspect -f '{{.Name}}' ${cont} | cut -c2-)
