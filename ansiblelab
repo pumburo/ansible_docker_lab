@@ -1,0 +1,70 @@
+#!/bin/bash
+
+numOfCont=10				# How many containers to be create
+pubKeyPath=~/.ssh/id_rsa.pub 		# Path of public key
+image=pumburo/ansibletesthost		# Which docker image to use
+
+case $1 in
+	create )
+		if [ -f /tmp/hostsFileForAnsible ]; then
+			rm -rf /tmp/hostsFileForAnsible
+		fi
+
+		for (( i=1; i<=${numOfCont}; i++ )); do
+			docker run -itd --name ansible_test_host${i} ${image}
+			hostIp=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ansible_test_host${i})
+			echo "$hostIp ansible_test_host${i}" >> /tmp/hostsFileForAnsible
+			docker cp $pubKeyPath ansible_test_host${i}:/root/.ssh/authorized_keys
+			docker exec -it ansible_test_host${i} chown root:root /root/.ssh/authorized_keys
+		done
+
+		echo -e "\033[0;31m########## Add these to your /etc/hosts file ##########"
+		cat /tmp/hostsFileForAnsible
+		;;
+
+	start )
+		if [ -f /tmp/hostsFileForAnsible ]; then
+			rm -rf /tmp/hostsFileForAnsible
+		fi
+
+		for cont in $(docker ps -a | grep ansible_test_host | awk '{print $1}'); do
+			docker start ${cont}
+			hostIp=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${cont})
+			contName=$(docker inspect -f '{{.Name}}' ${cont} | cut -c2-)
+			echo "$hostIp $contName" >> /tmp/hostsFileForAnsible
+		done
+
+		echo -e "\033[0;31m########## Add these to your /etc/hosts file ##########"
+		cat /tmp/hostsFileForAnsible
+		;;
+
+	kill )
+		docker kill $(docker ps -a | grep ansible_test_host | awk '{print $1}')
+		;;
+
+	rm )
+		for cont in $(docker ps -a | grep ansible_test_host | awk '{print $1}'); do
+			if [[ $(docker inspect -f '{{.State.Running}}' ${cont}) == "true" ]]; then
+				docker kill ${cont}
+			fi
+			docker rm ${cont}
+		done
+		;;
+
+	* )
+		echo '''
+	Usage:
+
+	For creating containers: ansiblelabcreate create
+	For killing containers:  ansiblelabcreate kill
+	For starting containers: ansiblelabcreate start
+	For removing containers: ansiblelabcreate rm
+
+	For disabling host key checking: echo "StrictHostKeyChecking no" >> ~/.ssh/config
+
+	After you create containers, add ip addresses to /etc/hosts file and
+	add hosts to your ansible inventory.
+
+		'''
+		;;
+esac
