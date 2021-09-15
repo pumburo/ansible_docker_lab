@@ -167,16 +167,16 @@ Containerlar kill edildikten sonra arada farklı containerlar başlamış olabil
 	dd680076d659
 	30e6cfe617c1
 	########## Add these to your /etc/hosts file ##########
-	172.17.0.3 ansible_test_host10
-	172.17.0.4 ansible_test_host9
-	172.17.0.5 ansible_test_host8
-	172.17.0.6 ansible_test_host7
-	172.17.0.7 ansible_test_host6
-	172.17.0.8 ansible_test_host5
-	172.17.0.9 ansible_test_host4
-	172.17.0.10 ansible_test_host3
-	172.17.0.11 ansible_test_host2
-	172.17.0.12 ansible_test_host1
+	172.17.0.3 ansible_test_host1
+	172.17.0.4 ansible_test_host2
+	172.17.0.5 ansible_test_host3
+	172.17.0.6 ansible_test_host4
+	172.17.0.7 ansible_test_host5
+	172.17.0.8 ansible_test_host6
+	172.17.0.9 ansible_test_host7
+	172.17.0.10 ansible_test_host8
+	172.17.0.11 ansible_test_host9
+	172.17.0.12 ansible_test_host10
 	
 **ansiblelab rm** komutu girildikten sonra oluşturulmuş olan containerlar eğer ayakta ise önce kill edilerek, eğer değilse doğrudan silinir. 
 
