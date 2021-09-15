@@ -7,7 +7,7 @@ Ansible test ve çalışmalarında kullanılmak üzere local docker containerlar
 Scripte çalıştırılabilrme yetkisi verilir ve çalıştırılabilir dosyaların olduğu pathlerden birine kopyalanır.
 
 	sudo chmod +x ansiblelab
-	cp ansiblelab /usr/bin
+	sudo cp ansiblelab /usr/bin
 
 # Değişkenler
 
@@ -205,4 +205,4 @@ Containerlar kill edildikten sonra arada farklı containerlar başlamış olabil
 	CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS     NAMES
 	99a7c746ed13   debian    "bash"    3 minutes ago   Up 3 minutes             pensive_driscoll
 
-Containerları ayağa kaldırıp bağlatıyı teyit ettikten sonra hostları farklı şekilde gruplayarak testlerinizi ansible testlerinizi localinizde yapabilirsiniz.
+Containerları ayağa kaldırıp bağlatıyı teyit ettikten sonra hostları farklı şekilde gruplayarak ansible testlerinizi localinizde yapabilirsiniz.
