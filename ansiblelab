@@ -1,21 +1,33 @@
 #!/bin/bash
 
-numOfCont=10				# How many containers to be create
-pubKeyPath=~/.ssh/id_rsa.pub 		# Path of public key
-image=pumburo/ansibletesthost		# Which docker image to use
+numOfContOne=10					# How many Ubuntu containers to be create
+numOfContTwo=10					# How many Centos containers to be create
+pubKeyPath=~/.ssh/id_rsa.pub			# Path of ssh public key
+imageOne=pumburo/ansibleubuntutesthost		# Which docker container to use
+nameOfImageOne="ansible_ubuntu_host"		# Container name of type one
+imageTwo=pumburo/ansiblecontostesthost		# Which docker container to use
+nameOfImageTwo="ansible_centos_host"		# Container name of type two
 
 case $1 in
 	create )
 		if [ -f /tmp/hostsFileForAnsible ]; then
-			rm -rf /tmp/hostsFileForAnsible
+			rm -rf /tmp/hostsFileForAnsible	
 		fi
 
-		for (( i=1; i<=${numOfCont}; i++ )); do
-			docker run -itd --name ansible_test_host${i} ${image}
-			hostIp=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ansible_test_host${i})
-			echo "$hostIp ansible_test_host${i}" >> /tmp/hostsFileForAnsible
-			docker cp $pubKeyPath ansible_test_host${i}:/root/.ssh/authorized_keys
-			docker exec -it ansible_test_host${i} chown root:root /root/.ssh/authorized_keys
+		for (( i=1; i<=${numOfContOne}; i++ )); do
+			docker run -itd --name ${nameOfImageOne}${i} ${imageOne}
+			hostIp=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${nameOfImageOne}${i})
+			echo "$hostIp ${nameOfImageOne}${i}" >> /tmp/hostsFileForAnsible
+			docker cp $pubKeyPath ${nameOfImageOne}${i}:/root/.ssh/authorized_keys
+			docker exec -it ${nameOfImageOne}${i} chown root:root /root/.ssh/authorized_keys
+		done
+
+		for (( i=1; i<=${numOfContTwo}; i++ )); do
+			docker run -itd --name ${nameOfImageTwo}${i} --privileged ${imageTwo} /usr/sbin/init
+			hostIp=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${nameOfImageTwo}${i})
+			echo "$hostIp ${nameOfImageTwo}${i}" >> /tmp/hostsFileForAnsible
+			docker cp $pubKeyPath ${nameOfImageTwo}${i}:/root/.ssh/authorized_keys
+			docker exec -it ${nameOfImageTwo}${i} chown root:root /root/.ssh/authorized_keys
 		done
 
 		echo -e "\033[0;31m########## Add these to your /etc/hosts file ##########"
@@ -27,7 +39,7 @@ case $1 in
 			rm -rf /tmp/hostsFileForAnsible
 		fi
 
-		for cont in $(docker ps -a | grep ansible_test_host | awk '{print $1}' | tac); do
+		for cont in $(docker ps -a | grep "${nameOfImageOne}\|${nameOfImageTwo}" | awk '{print $1}' | tac); do
 			docker start ${cont}
 			hostIp=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${cont})
 			contName=$(docker inspect -f '{{.Name}}' ${cont} | cut -c2-)
@@ -39,11 +51,11 @@ case $1 in
 		;;
 
 	kill )
-		docker kill $(docker ps -a | grep ansible_test_host | awk '{print $1}')
+		docker kill $(docker ps -a | grep "${nameOfImageOne}\|${nameOfImageTwo}" | awk '{print $1}')
 		;;
 
 	rm )
-		for cont in $(docker ps -a | grep ansible_test_host | awk '{print $1}'); do
+		for cont in $(docker ps -a | grep "${nameOfImageOne}\|${nameOfImageTwo}" | awk '{print $1}'); do
 			if [[ $(docker inspect -f '{{.State.Running}}' ${cont}) == "true" ]]; then
 				docker kill ${cont}
 			fi
