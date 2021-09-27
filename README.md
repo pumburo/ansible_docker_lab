@@ -100,10 +100,6 @@ Tüm containerlar ayağa kaltıktan sonra containerların alan adları ve ipleri
 	> 172.17.0.20 ansible_centos_host9
 	> 172.17.0.21 ansible_centos_host10
 	> EOF
-	root@S145:~# ssh root@ansible_centos_host9
-	The authenticity of host 'ansible_centos_host9 (172.17.0.20)' can't be established.
-	ECDSA key fingerprint is SHA256:FzEs0+FC6QCpczdeeGJRMOl7t0imFThUBtjIDgnn0vE.
-	Are you sure you want to continue connecting (yes/no)? ^C
 	root@S145:~# exit 
 	çıkış
 	mahmut@S145:~$ ssh root@ansible_centos_host9
@@ -114,7 +110,6 @@ Tüm containerlar ayağa kaltıktan sonra containerların alan adları ve ipleri
 
 Hostların Ansible'ın hosts dosyasına da eklenmesi gerekmektedir. Favori text editörünüz ile **/etc/ansible/hosts** dosyasını açarak aşağıdaki örneğe benzer bir editleme yapabilirsiniz. 
 
-	[testcluster]
 	[testcluster]
 	ansible_ubuntu_host1 ansible_ssh_user=root ansible_ssh_private_key_file=/home/mahmut/.ssh/id_rsa
 	ansible_ubuntu_host2 ansible_ssh_user=root ansible_ssh_private_key_file=/home/mahmut/.ssh/id_rsa
