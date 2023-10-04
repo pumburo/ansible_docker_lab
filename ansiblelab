@@ -64,19 +64,19 @@ case $1 in
 		;;
 
 	* )
-		echo '''
+		echo """
 	Usage:
 
-	For creating containers: ansiblelabcreate create
-	For killing containers:  ansiblelabcreate kill
-	For starting containers: ansiblelabcreate start
-	For removing containers: ansiblelabcreate rm
+	For creating containers: $0 create
+	For killing containers:  $0 kill
+	For starting containers: $0 start
+	For removing containers: $0 rm
 
 	For disabling host key checking: echo "StrictHostKeyChecking no" >> ~/.ssh/config
 
 	After you create containers, add ip addresses to /etc/hosts file and
 	add hosts to your ansible inventory.
 
-		'''
+		"""
 		;;
 esac
